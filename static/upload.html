@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Document</title>
+</head>
+<body>
+<h1>Upload Document</h1>
+
+<h2>Login</h2>
+<form id="loginForm">
+    <label for="username">Username:</label><br>
+    <input type="text" id="username" name="username"><br>
+    <label for="password">Password:</label><br>
+    <input type="password" id="password" name="password"><br><br>
+    <input type="submit" value="Login">
+</form>
+
+<h2>Upload Document</h2>
+<form id="uploadForm" enctype="multipart/form-data">
+    <label for="file_name">File Name:</label><br>
+    <input type="text" id="file_name" name="file_name"><br>
+    <label for="link">Link:</label><br>
+    <input type="text" id="link" name="link"><br>
+    <label for="description">Description:</label><br>
+    <input type="text" id="description" name="description"><br>
+    <label for="image">Image:</label><br>
+    <input type="file" id="image" name="image"><br><br>
+    <input type="submit" value="Upload">
+</form>
+
+<h2>Documents</h2>
+<button id="fetchDocumentsBtn">Fetch Documents</button>
+<div id="documents"></div>
+
+<div id="message"></div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        var username = document.getElementById('username').value;
+        var password = document.getElementById('password').value;
+
+        fetch('/admin/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username: username, password: password })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token) {
+                    sessionStorage.setItem('jwtToken', data.token);
+                    document.getElementById('message').innerHTML = '<p>Login successful!</p>';
+                } else {
+                    document.getElementById('message').innerHTML = '<p>Login failed: ' + data.error + '</p>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('message').innerHTML = '<p>Login error: ' + error.message + '</p>';
+            });
+    });
+
+    document.getElementById('uploadForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        var formData = new FormData();
+        formData.append('file_name', document.getElementById('file_name').value);
+        formData.append('link', document.getElementById('link').value);
+        formData.append('description', document.getElementById('description').value);
+        formData.append('image', document.getElementById('image').files[0]);
+
+        var token = sessionStorage.getItem('jwtToken');
+
+        fetch('/api/document', {
+            method: 'POST',
+            headers: {
+                'Authorization': token
+            },
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('message').innerHTML = '<p>Document uploaded successfully!</p>';
+            })
+            .catch(error => {
+                document.getElementById('message').innerHTML = '<p>Error uploading document: ' + error.message + '</p>';
+            });
+    });
+
+    document.getElementById('fetchDocumentsBtn').addEventListener('click', function() {
+        var token = sessionStorage.getItem('jwtToken');
+
+        fetch('/api/documents', {
+            method: 'GET',
+            headers: {
+                'Authorization': token
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data); // Log the response data
+                var documentsDiv = document.getElementById('documents');
+                documentsDiv.innerHTML = '';
+                data.forEach(function(doc) {
+                    var docDiv = document.createElement('div');
+                    docDiv.innerHTML = '<p>File Name: ' + doc.file_name + '</p>' +
+                        '<p>Link: ' + doc.link + '</p>' +
+                        '<p>Description: ' + doc.description + '</p>' +
+                        '<img src="' + doc.image_path + '" alt="' + doc.file_name + '" style="width:200px;height:200px;">';
+                    documentsDiv.appendChild(docDiv);
+                });
+            })
+            .catch(error => {
+                document.getElementById('message').innerHTML = '<p>Error fetching documents: ' + error.message + '</p>';
+            });
+    });
+</script>
+</body>
+</html>
