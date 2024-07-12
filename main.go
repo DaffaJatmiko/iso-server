@@ -41,8 +41,8 @@ func main() {
 		log.Fatalf("failed to auto migrate database: %v", err)
 	}
 
-		// Seed the database
-		db.Seed(database)
+	// Seed the database
+	db.Seed(database)
 
 	// Initialize repositories services, and controllers
 	documentRepository := repository.NewDocumentRepository(database)
@@ -72,7 +72,7 @@ func main() {
 
 	// Set up CORS middleware with specific configuration
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},

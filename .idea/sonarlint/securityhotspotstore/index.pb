@@ -43,3 +43,5 @@ _
 ,internal/repository/admin_repository_test.go,6\b\6b1e192f07895c535d79900b477c96ffb4e7d519
 B
 static/upload.html,8\a\8a6f3314f3f8e580b50cb654224d4f34179c80d0
+7
+main.go,0\6\0607f785dfa3c3861b3239f6723eb276d8056461
