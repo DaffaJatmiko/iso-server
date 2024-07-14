@@ -27,7 +27,7 @@ func SendResetEmail(smtpConfig SMTPConfig, email, token string) error {
 	m := gomail.NewMessage()
 	m.SetHeader("From", smtpConfig.From)
 	m.SetHeader("To", email)
-	m.SetBody("text/plain", fmt.Sprintf("Here is your password reset link: http://localhost:3000/newpass?token=%s", token))
+	m.SetBody("text/plain", fmt.Sprintf("Here is your password reset link: https://iso-9001-2015-kemendag-ri.vercel.app/newpass?token=%s", token))
 
 	d := gomail.NewDialer(smtpConfig.Host, smtpConfig.Port, smtpConfig.Username, smtpConfig.Password)
 	return d.DialAndSend(m)

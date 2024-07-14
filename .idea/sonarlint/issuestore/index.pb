@@ -9,8 +9,6 @@ I
 internal/model/respons.go,e\0\e021f808ee7480b96e7912a8ffa9bb3dddf18a3c
 I
 internal/router/router.go,d\3\d35f86d8ee46b9d4c359761b948caee53f5f3ecd
-;
-cmd/main.go,9\3\93310a20c22640d80343161f98be28beb14eb4e9
 J
 internal/model/document.go,9\8\985ba1e24a09c270f2bc0275c8bf789c3cd78b61
 @
