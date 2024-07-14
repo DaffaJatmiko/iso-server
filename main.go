@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/DaffaJatmiko/project-iso/internal/model"
 	"log"
 	"os"
 	"time"
@@ -8,7 +9,6 @@ import (
 	"github.com/DaffaJatmiko/project-iso/config"
 	"github.com/DaffaJatmiko/project-iso/internal/controller"
 	"github.com/DaffaJatmiko/project-iso/internal/db"
-	"github.com/DaffaJatmiko/project-iso/internal/model"
 	"github.com/DaffaJatmiko/project-iso/internal/repository"
 	"github.com/DaffaJatmiko/project-iso/internal/router"
 	"github.com/DaffaJatmiko/project-iso/internal/service"
@@ -37,11 +37,23 @@ func main() {
 	//redisClient := db.InitRedis(cfg.Redis.Addr, cfg.Redis.Password, cfg.Redis.DB)
 
 	// Auto Migrate the database
-	if err := database.AutoMigrate(&model.Document{}, &model.Admin{}); err != nil {
-		log.Fatalf("failed to auto migrate database: %v", err)
+	//if err := database.AutoMigrate(&model.Document{}, &model.Admin{}); err != nil {
+	//	log.Fatalf("failed to auto migrate database: %v", err)
+	//}
+
+	// Check if tables exist and migrate only if they don't
+	if !db.TableExists(database, "documents") {
+		if err := database.AutoMigrate(&model.Document{}); err != nil {
+			log.Fatalf("failed to auto migrate documents table: %v", err)
+		}
+	}
+	if !db.TableExists(database, "admins") {
+		if err := database.AutoMigrate(&model.Admin{}); err != nil {
+			log.Fatalf("failed to auto migrate admins table: %v", err)
+		}
 	}
 
-	// Seed the database
+	// Seed the database only if it is not already seeded
 	db.Seed(database)
 
 	// Initialize repositories services, and controllers

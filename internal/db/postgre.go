@@ -12,3 +12,9 @@ func InitDB(dsn string) (*gorm.DB, error) {
 	}
 	return db, nil
 }
+
+func TableExists(db *gorm.DB, tableName string) bool {
+	var exists bool
+	db.Raw("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = ?)", tableName).Scan(&exists)
+	return exists
+}

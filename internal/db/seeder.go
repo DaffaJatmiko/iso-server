@@ -9,8 +9,19 @@ import (
 )
 
 func Seed(db *gorm.DB) {
-	seedDocuments(db)
-	seedAdmins(db)
+	if !SeedExists(db, "documents") {
+		seedDocuments(db)
+	}
+
+	if !SeedExists(db, "admins") {
+		seedAdmins(db)
+	}
+}
+
+func SeedExists(db *gorm.DB, tableName string) bool {
+	var count int64
+	db.Table(tableName).Count(&count)
+	return count > 0
 }
 
 func seedDocuments(db *gorm.DB) {
