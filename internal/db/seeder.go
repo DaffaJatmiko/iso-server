@@ -16,6 +16,10 @@ func Seed(db *gorm.DB) {
 	if !SeedExists(db, "admins") {
 		seedAdmins(db)
 	}
+
+	if !SeedExists(db, "galleries") {
+		seedGalleries(db)
+	}
 }
 
 func SeedExists(db *gorm.DB, tableName string) bool {
@@ -55,6 +59,27 @@ func seedAdmins(db *gorm.DB) {
 	for _, admin := range admins {
 		if err := db.Create(&admin).Error; err != nil {
 			log.Fatalf("failed to seed admins: %v", err)
+		}
+	}
+}
+
+func seedGalleries(db *gorm.DB) {
+	galleries := []model.Gallery{
+		{ImagePath: "uploads/gallery1.jpg"},
+		{ImagePath: "uploads/gallery2.jpg"},
+		{ImagePath: "uploads/gallery3.jpg"},
+		{ImagePath: "uploads/gallery4.jpg"},
+		{ImagePath: "uploads/gallery5.jpg"},
+		{ImagePath: "uploads/gallery6.jpg"},
+		{ImagePath: "uploads/gallery7.jpg"},
+		{ImagePath: "uploads/gallery8.jpg"},
+		{ImagePath: "uploads/gallery9.jpg"},
+		{ImagePath: "uploads/gallery10.jpg"},
+	}
+
+	for _, gallery := range galleries {
+		if err := db.Create(&gallery).Error; err != nil {
+			log.Fatalf("failed to seed galleries: %v", err)
 		}
 	}
 }

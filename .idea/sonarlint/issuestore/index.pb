@@ -45,3 +45,13 @@ B
 main.go,0\6\0607f785dfa3c3861b3239f6723eb276d8056461
 E
 internal/db/seeder.go,e\8\e861d3fafd09c960bb8f44ecf5dfe5ccfeb09325
+I
+internal/model/gallery.go,f\4\f425c9879e8358d9d3dd8ffff8c683e995c7319e
+N
+internal/controller/gallery.go,b\4\b462c304c65bd259c7c7c02cce8426b2b6208eac
+K
+internal/service/gallery.go,c\f\cfdcca699c12f91f44a045021a2a26279020a891
+N
+internal/repository/gallery.go,c\7\c7c7cf85d79ecb8a086387b71d60fa273c57ce9f
+E
+pkg/util/save_file.go,3\2\32e5cc7cdd30dca98e25734f805fc927c248a976

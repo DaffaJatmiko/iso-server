@@ -3,9 +3,8 @@ package service
 import (
 	"github.com/DaffaJatmiko/project-iso/internal/model"
 	"github.com/DaffaJatmiko/project-iso/internal/repository"
-	"io"
+	"github.com/DaffaJatmiko/project-iso/pkg/util"
 	"mime/multipart"
-	"os"
 	"path/filepath"
 	"time"
 )
@@ -30,7 +29,7 @@ func (service *DocumentServiceImpl) CreateDocument(document *model.Document, ima
 	if imageFile != nil {
 		fileName := time.Now().Format("20060102150405") + "_" + imageFile.Filename
 		filePath := filepath.Join("uploads", fileName)
-		if err := saveFile(imageFile, filePath); err != nil {
+		if err := util.SaveFile(imageFile, filePath); err != nil {
 			return err
 		}
 		document.ImagePath = filePath
@@ -47,48 +46,48 @@ func (service *DocumentServiceImpl) GetDocumentByID(documentID uint) (*model.Doc
 }
 
 func (service *DocumentServiceImpl) UpdateDocument(document *model.Document, imageFile *multipart.FileHeader) error {
-// Get existing document from the database
-existingDocument, err := service.repo.GetDocumentById(document.ID)
-if err != nil {
-	return err
-}
-
-// Update fields
-existingDocument.FileName = document.FileName
-existingDocument.Link = document.Link
-existingDocument.Description = document.Description
-
-if imageFile != nil {
-	fileName := time.Now().Format("20060102150405") + "_" + imageFile.Filename
-	filePath := filepath.Join("uploads", fileName)
-	if err := saveFile(imageFile, filePath); err != nil {
+	// Get existing document from the database
+	existingDocument, err := service.repo.GetDocumentById(document.ID)
+	if err != nil {
 		return err
 	}
-	existingDocument.ImagePath = filePath
-}
 
-return service.repo.UpdateDocument(existingDocument)
+	// Update fields
+	existingDocument.FileName = document.FileName
+	existingDocument.Link = document.Link
+	existingDocument.Description = document.Description
+
+	if imageFile != nil {
+		fileName := time.Now().Format("20060102150405") + "_" + imageFile.Filename
+		filePath := filepath.Join("uploads", fileName)
+		if err := util.SaveFile(imageFile, filePath); err != nil {
+			return err
+		}
+		existingDocument.ImagePath = filePath
+	}
+
+	return service.repo.UpdateDocument(existingDocument)
 }
 
 func (service *DocumentServiceImpl) DeleteDocument(documentID uint) error {
 	return service.repo.DeleteDocument(documentID)
 }
 
-func saveFile(file *multipart.FileHeader, path string) error {
-	src, err := file.Open()
-	if err != nil {
-		return err
-	}
-	defer src.Close()
-
-	dst, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-	defer dst.Close()
-
-	if _, err := io.Copy(dst, src); err != nil {
-		return err
-	}
-	return nil
-}
+//func saveFile(file *multipart.FileHeader, path string) error {
+//	src, err := file.Open()
+//	if err != nil {
+//		return err
+//	}
+//	defer src.Close()
+//
+//	dst, err := os.Create(path)
+//	if err != nil {
+//		return err
+//	}
+//	defer dst.Close()
+//
+//	if _, err := io.Copy(dst, src); err != nil {
+//		return err
+//	}
+//	return nil
+//}

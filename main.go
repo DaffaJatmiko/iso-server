@@ -52,6 +52,11 @@ func main() {
 			log.Fatalf("failed to auto migrate admins table: %v", err)
 		}
 	}
+	if !db.TableExists(database, "galleries") {
+		if err := database.AutoMigrate(&model.Gallery{}); err != nil {
+			log.Fatalf("failed to auto migrate galleries table: %v", err)
+		}
+	}
 
 	// Seed the database only if it is not already seeded
 	db.Seed(database)
@@ -71,6 +76,10 @@ func main() {
 	}
 	adminService := service.NewUserService(adminRepository, cfg.JWT.SecretKey, smtpConfig)
 	adminController := controller.NewUserController(adminService)
+
+	galleryRepository := repository.NewGalleryRepository(database)
+	galleryService := service.NewGalleryService(galleryRepository)
+	galleryController := controller.NewGalleryController(galleryService)
 
 	// Ensure the upload directory exists
 	if _, err := os.Stat("uploads"); os.IsNotExist(err) {
@@ -92,12 +101,17 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
+	// Set static file routes
 	r.Static("/uploads", "./uploads")
 	r.Static("/static", "./static")
+
+	// Testing upload image route
 	r.GET("/upload", func(c *gin.Context) {
 		c.File("./static/upload.html")
 	})
-	router.SetupRoutes(r, documentController, adminController, cfg.JWT.SecretKey)
+
+	// Setup application routes
+	router.SetupRoutes(r, documentController, adminController, galleryController, cfg.JWT.SecretKey)
 
 	if err := r.Run(":" + cfg.Server.Port); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
