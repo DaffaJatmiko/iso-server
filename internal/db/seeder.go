@@ -65,16 +65,16 @@ func seedAdmins(db *gorm.DB) {
 
 func seedGalleries(db *gorm.DB) {
 	galleries := []model.Gallery{
-		{ImagePath: "uploads/gallery1.jpg"},
-		{ImagePath: "uploads/gallery2.jpg"},
-		{ImagePath: "uploads/gallery3.jpg"},
-		{ImagePath: "uploads/gallery4.jpg"},
-		{ImagePath: "uploads/gallery5.jpg"},
-		{ImagePath: "uploads/gallery6.jpg"},
-		{ImagePath: "uploads/gallery7.jpg"},
-		{ImagePath: "uploads/gallery8.jpg"},
-		{ImagePath: "uploads/gallery9.jpg"},
-		{ImagePath: "uploads/gallery10.jpg"},
+		{ImagePath: "uploads/gallery1.JPG"},
+		{ImagePath: "uploads/gallery2.JPG"},
+		{ImagePath: "uploads/gallery3.JPG"},
+		{ImagePath: "uploads/gallery4.JPG"},
+		{ImagePath: "uploads/gallery5.JPG"},
+		{ImagePath: "uploads/gallery6.JPG"},
+		{ImagePath: "uploads/gallery7.JPG"},
+		{ImagePath: "uploads/gallery8.JPG"},
+		{ImagePath: "uploads/gallery9.JPG"},
+		{ImagePath: "uploads/gallery10.JPG"},
 	}
 
 	for _, gallery := range galleries {
