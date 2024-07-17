@@ -13,7 +13,7 @@ type GalleryService interface {
 	CreateGallery(imageFile *multipart.FileHeader) error
 	GetGalleries() ([]model.Gallery, error)
 	GetGalleryByID(galleryID uint) (*model.Gallery, error)
-	UpdateGallery(galleryID uint, imageFile *multipart.FileHeader) error
+	UpdateGallery(gallery *model.Gallery, imageFile *multipart.FileHeader) error
 	DeleteGallery(galleryID uint) error
 }
 
@@ -46,20 +46,26 @@ func (s *galleryService) GetGalleryByID(galleryID uint) (*model.Gallery, error) 
 	return s.repo.FindByID(galleryID)
 }
 
-func (s *galleryService) UpdateGallery(galleryID uint, imageFile *multipart.FileHeader) error {
-	gallery, err := s.repo.FindByID(galleryID)
+func (s *galleryService) UpdateGallery(gallery *model.Gallery, imageFile *multipart.FileHeader) error {
+	// Get existing gallery from the database
+	existingGallery, err := s.repo.FindByID(gallery.ID)
 	if err != nil {
 		return err
 	}
 
-	fileName := time.Now().Format("20060102150405") + "_" + imageFile.Filename
-	filePath := filepath.Join("uploads", fileName)
-	if err := util.SaveFile(imageFile, filePath); err != nil {
-		return err
+	// Update fields
+	existingGallery.ImagePath = gallery.ImagePath
+
+	if imageFile != nil {
+		fileName := time.Now().Format("20060102150405") + "_" + imageFile.Filename
+		filePath := filepath.Join("uploads", fileName)
+		if err := util.SaveFile(imageFile, filePath); err != nil {
+			return err
+		}
+		existingGallery.ImagePath = filePath
 	}
 
-	gallery.ImagePath = filePath
-	return s.repo.Update(gallery)
+	return s.repo.Update(existingGallery)
 }
 
 func (s *galleryService) DeleteGallery(galleryID uint) error {

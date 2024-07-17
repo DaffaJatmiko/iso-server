@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/DaffaJatmiko/project-iso/internal/model"
 	"github.com/DaffaJatmiko/project-iso/internal/service"
 	"github.com/DaffaJatmiko/project-iso/pkg/util"
 	"github.com/gin-gonic/gin"
@@ -69,26 +70,32 @@ func (g *GalleryControllerImpl) GetGalleryByID(c *gin.Context) {
 }
 
 func (g *GalleryControllerImpl) UpdateGallery(c *gin.Context) {
+	var gallery model.Gallery
+
+	// Bind form fields manually
 	idStr := c.PostForm("id")
 	id, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
 		util.ErrorResponse(c, http.StatusBadRequest, "Invalid gallery ID")
 		return
 	}
+	gallery.ID = uint(id) // Set the ID correctly
 
+	// Retrieve the file
 	file, err := c.FormFile("image")
 	if err != nil && err != http.ErrMissingFile {
 		util.ErrorResponse(c, http.StatusBadRequest, "Failed to upload image")
 		return
 	}
 
-	err = g.service.UpdateGallery(uint(id), file)
+	// Call the service layer to update the gallery
+	err = g.service.UpdateGallery(&gallery, file)
 	if err != nil {
 		util.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Gallery updated successfully"})
+	c.JSON(http.StatusOK, model.NewSuccessResp("Update Gallery Success"))
 }
 
 func (g *GalleryControllerImpl) DeleteGallery(c *gin.Context) {
