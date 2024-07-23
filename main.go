@@ -57,6 +57,16 @@ func main() {
 			log.Fatalf("failed to auto migrate galleries table: %v", err)
 		}
 	}
+	if !db.TableExists(database, "audits") {
+		if err := database.AutoMigrate(&model.Audit{}); err != nil {
+			log.Fatalf("failed to auto migrate audits table: %v", err)
+		}
+	}
+	if !db.TableExists(database, "kesesuaian") {
+		if err := database.AutoMigrate(&model.Kesesuaian{}); err != nil {
+			log.Fatalf("failed to auto migrate kesesuaian table: %v", err)
+		}
+	}
 
 	// Seed the database only if it is not already seeded
 	db.Seed(database)
@@ -80,6 +90,10 @@ func main() {
 	galleryRepository := repository.NewGalleryRepository(database)
 	galleryService := service.NewGalleryService(galleryRepository)
 	galleryController := controller.NewGalleryController(galleryService)
+
+	auditRepository := repository.NewAuditRepository(database)
+	auditService := service.NewAuditService(auditRepository)
+	auditController := controller.NewAuditController(auditService)
 
 	// Ensure the upload directory exists
 	if _, err := os.Stat("uploads"); os.IsNotExist(err) {
@@ -111,7 +125,7 @@ func main() {
 	})
 
 	// Setup application routes
-	router.SetupRoutes(r, documentController, adminController, galleryController, cfg.JWT.SecretKey)
+	router.SetupRoutes(r, documentController, adminController, galleryController, auditController, cfg.JWT.SecretKey)
 
 	if err := r.Run(":" + cfg.Server.Port); err != nil {
 		log.Fatalf("Failed to start server: %v", err)

@@ -11,6 +11,7 @@ func SetupRoutes(
 	documentController controller.DocumentController,
 	userController controller.UserController,
 	galleryController controller.GalleryController,
+	auditController controller.AuditController,
 	jwtSecret string,
 ) {
 	// Public Routes
@@ -39,4 +40,14 @@ func SetupRoutes(
 	api.PUT("/gallery", galleryController.UpdateGallery)
 	api.DELETE("/gallery/:id", galleryController.DeleteGallery)
 
+	// Audit Routes
+	api.POST("/audit", auditController.CreateAudit)
+	api.POST("/audit/kesesuaian", auditController.CreateKesesuaian)
+	api.POST("/audit/audit-with-kesesuaian", auditController.CreateAuditWithKesesuaian)
+	api.GET("/audit/:id", auditController.GetAuditByID)
+	api.GET("/audits", auditController.GetAllAudits)
+	api.DELETE("/audit/:id", auditController.DeleteAudit)
+	api.GET("/audit/persentase-dokumen/:auditID", auditController.CalculatePersentaseKesesuaianDokumen)
+	api.GET("/audit/persentase-kategori/:kategori", auditController.CalculatePersentaseKesesuaianPerKategori)
+	api.GET("/audit/persentase-poin-audit/:poin_audit", auditController.CalculatePersentaseKesesuaianPerPoinAudit)
 }
