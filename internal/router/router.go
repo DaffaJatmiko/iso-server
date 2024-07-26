@@ -50,4 +50,6 @@ func SetupRoutes(
 	api.GET("/audit/persentase-dokumen/:auditID", auditController.CalculatePersentaseKesesuaianDokumen)
 	api.GET("/audit/persentase-kategori/:kategori", auditController.CalculatePersentaseKesesuaianPerKategori)
 	api.GET("/audit/persentase-poin-audit/:poin_audit", auditController.CalculatePersentaseKesesuaianPerPoinAudit)
+	api.GET("/audit/persentase/poin/:poinAudit/kategori/:kategori", auditController.CalculatePersentaseKesesuaianPerPoinAuditPerKategori)
+
 }

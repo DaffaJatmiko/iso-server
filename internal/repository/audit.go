@@ -17,6 +17,7 @@ type AuditRepository interface {
 	CalculatePersentaseKesesuaianDokumen(auditID uint) (*model.PersentaseKesesuaianDokumen, error)
 	CalculatePersentaseKesesuaianPerKategori(kategori string) (*model.PersentaseKesesuaianPerKategori, error)
 	CalculatePersentaseKesesuaianPerPoinAudit(poinAudit string) (*model.PersentaseKesesuaianPerPoinAudit, error)
+	CalculatePersentaseKesesuaianPerPoinAuditPerKategori(poinAudit, kategori string) (*model.PersentaseKesesuaianPerPoinAudit, error)
 }
 
 type auditRepository struct {
@@ -271,9 +272,83 @@ func (r *auditRepository) CalculatePersentaseKesesuaianPerPoinAudit(poinAudit st
 	return persentaseKesesuaianPerPoinAudit, nil
 }
 
-func boolToInt(value bool) int {
-	if value {
-		return 1
+func (r *auditRepository) CalculatePersentaseKesesuaianPerPoinAuditPerKategori(poinAudit, kategori string) (*model.PersentaseKesesuaianPerPoinAudit, error) {
+	var totalAudits int64
+	if err := r.DB.Model(&model.Audit{}).Where("kategori = ?", kategori).Count(&totalAudits).Error; err != nil {
+		return nil, err
 	}
-	return 0
+
+	if totalAudits == 0 {
+		return &model.PersentaseKesesuaianPerPoinAudit{
+			PoinAudit:            poinAudit,
+			PersentaseKesesuaian: 0,
+		}, nil
+	}
+
+	var totalSkor int64
+	switch poinAudit {
+	case "Surat":
+		if err := r.DB.Model(&model.Kesesuaian{}).
+			Joins("JOIN audits ON audits.id = kesesuaians.audit_id").
+			Where("kesesuaians.kesesuaian_surat = ? AND audits.kategori = ?", true, kategori).
+			Count(&totalSkor).Error; err != nil {
+			return nil, err
+		}
+	case "Pelaksanaan":
+		if err := r.DB.Model(&model.Kesesuaian{}).
+			Joins("JOIN audits ON audits.id = kesesuaians.audit_id").
+			Where("kesesuaians.kesesuaian_pelaksanaan = ? AND audits.kategori = ?", true, kategori).
+			Count(&totalSkor).Error; err != nil {
+			return nil, err
+		}
+	case "SDM":
+		if err := r.DB.Model(&model.Kesesuaian{}).
+			Joins("JOIN audits ON audits.id = kesesuaians.audit_id").
+			Where("kesesuaians.kesesuaian_sdm = ? AND audits.kategori = ?", true, kategori).
+			Count(&totalSkor).Error; err != nil {
+			return nil, err
+		}
+	case "Verifikasi":
+		if err := r.DB.Model(&model.Kesesuaian{}).
+			Joins("JOIN audits ON audits.id = kesesuaians.audit_id").
+			Where("kesesuaians.kesesuaian_verifikasi = ? AND audits.kategori = ?", true, kategori).
+			Count(&totalSkor).Error; err != nil {
+			return nil, err
+		}
+	case "IHA":
+		if err := r.DB.Model(&model.Kesesuaian{}).
+			Joins("JOIN audits ON audits.id = kesesuaians.audit_id").
+			Where("kesesuaians.kesesuaian_iha = ? AND audits.kategori = ?", true, kategori).
+			Count(&totalSkor).Error; err != nil {
+			return nil, err
+		}
+	case "Bukti TL":
+		if err := r.DB.Model(&model.Kesesuaian{}).
+			Joins("JOIN audits ON audits.id = kesesuaians.audit_id").
+			Where("kesesuaians.kesesuaian_bukti_tl = ? AND audits.kategori = ?", true, kategori).
+			Count(&totalSkor).Error; err != nil {
+			return nil, err
+		}
+	case "Selesai Audit":
+		if err := r.DB.Model(&model.Kesesuaian{}).
+			Joins("JOIN audits ON audits.id = kesesuaians.audit_id").
+			Where("kesesuaians.kesesuaian_selesai_audit = ? AND audits.kategori = ?", true, kategori).
+			Count(&totalSkor).Error; err != nil {
+			return nil, err
+		}
+	}
+
+	if totalAudits == 0 {
+		return &model.PersentaseKesesuaianPerPoinAudit{
+			PoinAudit:            poinAudit,
+			PersentaseKesesuaian: 0,
+		}, nil
+	}
+
+	persentase := (totalSkor * 100) / totalAudits
+
+	return &model.PersentaseKesesuaianPerPoinAudit{
+		PoinAudit:            poinAudit,
+		PersentaseKesesuaian: int(persentase),
+	}, nil
 }

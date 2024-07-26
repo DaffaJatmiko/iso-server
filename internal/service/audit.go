@@ -15,6 +15,7 @@ type AuditService interface {
 	CalculatePersentaseKesesuaianDokumen(auditID uint) (*model.PersentaseKesesuaianDokumen, error)
 	CalculatePersentaseKesesuaianPerKategori(kategori string) (*model.PersentaseKesesuaianPerKategori, error)
 	CalculatePersentaseKesesuaianPerPoinAudit(poinAudit string) (*model.PersentaseKesesuaianPerPoinAudit, error)
+	CalculatePersentaseKesesuaianPerPoinAuditPerKategori(pointAudit, kategori string) (*model.PersentaseKesesuaianPerPoinAudit, error)
 }
 
 type auditService struct {
@@ -77,4 +78,8 @@ func (s *auditService) CalculatePersentaseKesesuaianPerKategori(kategori string)
 
 func (s *auditService) CalculatePersentaseKesesuaianPerPoinAudit(poinAudit string) (*model.PersentaseKesesuaianPerPoinAudit, error) {
 	return s.repo.CalculatePersentaseKesesuaianPerPoinAudit(poinAudit)
+}
+
+func (s *auditService) CalculatePersentaseKesesuaianPerPoinAuditPerKategori(poinAudit, kategori string) (*model.PersentaseKesesuaianPerPoinAudit, error) {
+	return s.repo.CalculatePersentaseKesesuaianPerPoinAuditPerKategori(poinAudit, kategori)
 }

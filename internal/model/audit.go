@@ -65,3 +65,9 @@ type PersentaseKesesuaianPerPoinAudit struct {
 	PoinAudit            string `gorm:"type:varchar(255)" json:"poin_audit"`
 	PersentaseKesesuaian int    `json:"persentase_kesesuaian"`
 }
+
+type PersentaseKesesuaianPerPoinAuditPerKategori struct {
+	Kategori   string  `json:"kategori"`
+	PoinAudit  string  `json:"poin_audit"`
+	Persentase float64 `json:"persentase"`
+}

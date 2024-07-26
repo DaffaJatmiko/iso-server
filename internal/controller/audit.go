@@ -19,6 +19,7 @@ type AuditController interface {
 	CalculatePersentaseKesesuaianDokumen(ctx *gin.Context)
 	CalculatePersentaseKesesuaianPerKategori(ctx *gin.Context)
 	CalculatePersentaseKesesuaianPerPoinAudit(ctx *gin.Context)
+	CalculatePersentaseKesesuaianPerPoinAuditPerKategori(ctx *gin.Context)
 }
 
 type auditController struct {
@@ -175,4 +176,17 @@ func (c *auditController) CalculatePersentaseKesesuaianPerPoinAudit(ctx *gin.Con
 	}
 
 	ctx.JSON(http.StatusOK, persentase)
+}
+
+func (c *auditController) CalculatePersentaseKesesuaianPerPoinAuditPerKategori(ctx *gin.Context) {
+	poinAudit := ctx.Param("poinAudit")
+	kategori := ctx.Param("kategori")
+
+	persentaseKesesuaian, err := c.service.CalculatePersentaseKesesuaianPerPoinAuditPerKategori(poinAudit, kategori)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, persentaseKesesuaian)
 }
