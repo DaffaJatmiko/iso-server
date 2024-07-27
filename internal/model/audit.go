@@ -21,6 +21,11 @@ type Audit struct {
 	InspekturHadir      bool         `json:"inspektur_hadir"`
 	JumlahOrang         int          `json:"jumlah_orang"`
 	Kesesuaians         []Kesesuaian `gorm:"foreignKey:AuditID;constraint:OnDelete:CASCADE;" json:"kesesuaian"` // Add this line to define the relationship
+	HariLiburSurat      int          `json:"hari_libur_surat"`
+	HariLiburVerifikasi int          `json:"hari_libur_verifikasi"`
+	HariLiburIHA        int          `json:"hari_libur_iha"`
+	HariLiburBuktiTL    int          `json:"hari_libur_bukti_tl"`
+	HariLiburSelesai    int          `json:"hari_libur_selesai"`
 }
 
 type Kesesuaian struct {

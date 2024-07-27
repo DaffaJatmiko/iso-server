@@ -1,5 +1,5 @@
 
-²go:S1192¾"pDefine a constant instead of duplicating this literal "JOIN audits ON audits.id = kesesuaians.audit_id" 8 times.(”à¯Û8Þ‡­äŽ2J$ab0db099-71d7-492b-82ae-7090aafaaf3d
-’go:S3776#"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(•ŠÉ18Þ‡­äŽ2J$21341142-7251-44a8-8170-72979ea5ba35
-”go:S3776Ø"RRefactor this method to reduce its Cognitive Complexity from 17 to the 15 allowed.(û½Ý¹8á‡­äŽ2J$78292205-4b4e-472f-a122-385ec77cf64f
-”go:S3776“"RRefactor this method to reduce its Cognitive Complexity from 18 to the 15 allowed.(˜šÁ›8â‡­äŽ2J$410db0ad-baa4-43b3-aef6-0afa56c5fad6
+²go:S1192¾"pDefine a constant instead of duplicating this literal "JOIN audits ON audits.id = kesesuaians.audit_id" 8 times.(”à¯Û8‹‚ÖóŽ2J$6a14b1fe-b2f4-4165-9046-706a4b5ffcf3
+’go:S3776#"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(•ŠÉ18‹‚ÖóŽ2J$2c200a19-b5cb-402b-b59b-2a12b3976ead
+”go:S3776Ø"RRefactor this method to reduce its Cognitive Complexity from 17 to the 15 allowed.(û½Ý¹8Ž‚ÖóŽ2J$a5c8ccfe-aba3-49c9-8ac7-3103a497be36
+”go:S3776“"RRefactor this method to reduce its Cognitive Complexity from 18 to the 15 allowed.(˜šÁ›8Ž‚ÖóŽ2J$f17da8cb-c071-4621-8a51-827a6dbc2372

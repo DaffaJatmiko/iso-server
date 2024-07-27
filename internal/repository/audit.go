@@ -44,7 +44,7 @@ func (r *auditRepository) CreateKesesuaian(kesesuaian *model.Kesesuaian) error {
 	log.Printf("Loaded Audit for Kesesuaian: %+v", kesesuaian.Audit)
 
 	// Calculate compliance logic here
-	kesesuaian.JumlahHariSurat = util.CountBusinessDays(kesesuaian.Audit.TanggalSurat, kesesuaian.Audit.TanggalMulai)
+	kesesuaian.JumlahHariSurat = util.CountBusinessDays(kesesuaian.Audit.TanggalSurat, kesesuaian.Audit.TanggalMulai) - kesesuaian.Audit.HariLiburSurat
 	kesesuaian.KesesuaianSurat = kesesuaian.JumlahHariSurat > 9
 	if kesesuaian.KesesuaianSurat {
 		kesesuaian.SkorSurat = 1
@@ -67,7 +67,7 @@ func (r *auditRepository) CreateKesesuaian(kesesuaian *model.Kesesuaian) error {
 		kesesuaian.SkorSDM = 0
 	}
 
-	kesesuaian.JumlahHariVerifikasi = util.CountBusinessDays(kesesuaian.Audit.TanggalTindakLanjut, kesesuaian.Audit.TanggalVerifikasi)
+	kesesuaian.JumlahHariVerifikasi = util.CountBusinessDays(kesesuaian.Audit.TanggalTindakLanjut, kesesuaian.Audit.TanggalVerifikasi) - kesesuaian.Audit.HariLiburVerifikasi
 	kesesuaian.KesesuaianVerifikasi = kesesuaian.JumlahHariVerifikasi <= 7
 	if kesesuaian.KesesuaianVerifikasi {
 		kesesuaian.SkorVerifikasi = 1
@@ -75,22 +75,22 @@ func (r *auditRepository) CreateKesesuaian(kesesuaian *model.Kesesuaian) error {
 		kesesuaian.SkorVerifikasi = 0
 	}
 
-	kesesuaian.KesesuaianIHA = util.CountBusinessDays(kesesuaian.Audit.TanggalBAExit, kesesuaian.Audit.TanggalTerbitIHA) < 11 &&
-		util.CountBusinessDays(kesesuaian.Audit.TanggalBAExit, kesesuaian.Audit.TanggalTerbitLHA) < 11
+	kesesuaian.KesesuaianIHA = util.CountBusinessDays(kesesuaian.Audit.TanggalBAExit, kesesuaian.Audit.TanggalTerbitIHA)-kesesuaian.Audit.HariLiburIHA < 11 &&
+		util.CountBusinessDays(kesesuaian.Audit.TanggalBAExit, kesesuaian.Audit.TanggalTerbitLHA)-kesesuaian.Audit.HariLiburIHA < 11
 	if kesesuaian.KesesuaianIHA {
 		kesesuaian.SkorIHA = 1
 	} else {
 		kesesuaian.SkorIHA = 0
 	}
 
-	kesesuaian.KesesuaianBuktiTL = util.CountBusinessDays(kesesuaian.Audit.TanggalBAExit, kesesuaian.Audit.TanggalSelesaiTL) <= 40
+	kesesuaian.KesesuaianBuktiTL = util.CountBusinessDays(kesesuaian.Audit.TanggalBAExit, kesesuaian.Audit.TanggalSelesaiTL)-kesesuaian.Audit.HariLiburBuktiTL <= 40
 	if kesesuaian.KesesuaianBuktiTL {
 		kesesuaian.SkorBuktiTL = 1
 	} else {
 		kesesuaian.SkorBuktiTL = 0
 	}
 
-	kesesuaian.KesesuaianSelesaiAudit = util.CountBusinessDays(kesesuaian.Audit.TanggalSelesaiTL, kesesuaian.Audit.TanggalSuratSelesai) <= 7
+	kesesuaian.KesesuaianSelesaiAudit = util.CountBusinessDays(kesesuaian.Audit.TanggalSelesaiTL, kesesuaian.Audit.TanggalSuratSelesai)-kesesuaian.Audit.HariLiburSelesai <= 7
 	if kesesuaian.KesesuaianSelesaiAudit {
 		kesesuaian.SkorSelesaiAudit = 1
 	} else {
