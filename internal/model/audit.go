@@ -12,8 +12,7 @@ type Audit struct {
 	TanggalSelesai      time.Time    `json:"tanggal_selesai"`
 	TanggalSurat        time.Time    `json:"tanggal_surat"`
 	TanggalBAExit       time.Time    `json:"tanggal_ba_exit"`
-	TanggalTerbitIHA    time.Time    `json:"tanggal_terbit_iha"`
-	TanggalTerbitLHA    time.Time    `json:"tanggal_terbit_lha"`
+	TanggalTerbitIHALHA time.Time    `json:"tanggal_terbit_iha_lha"`
 	TanggalSelesaiTL    time.Time    `json:"tanggal_selesai_tl"`
 	TanggalSuratSelesai time.Time    `json:"tanggal_surat_selesai"`
 	TanggalTindakLanjut time.Time    `json:"tanggal_tindak_lanjut"`

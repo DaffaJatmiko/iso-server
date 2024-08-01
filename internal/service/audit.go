@@ -11,6 +11,7 @@ type AuditService interface {
 	CreateAuditWithKesesuaian(audit *model.Audit) (*model.Audit, error)
 	GetAuditByID(id uint) (*model.Audit, error)
 	GetAllAudits() ([]model.Audit, error)
+	UpdateAudit(audit *model.Audit) error
 	DeleteAudit(id uint) error
 	CalculatePersentaseKesesuaianDokumen(auditID uint) (*model.PersentaseKesesuaianDokumen, error)
 	CalculatePersentaseKesesuaianPerKategori(kategori string) (*model.PersentaseKesesuaianPerKategori, error)
@@ -62,6 +63,10 @@ func (s *auditService) GetAuditByID(id uint) (*model.Audit, error) {
 
 func (s *auditService) GetAllAudits() ([]model.Audit, error) {
 	return s.repo.GetAllAudits()
+}
+
+func (s *auditService) UpdateAudit(audit *model.Audit) error {
+	return s.repo.UpdateAudit(audit)
 }
 
 func (s *auditService) DeleteAudit(id uint) error {

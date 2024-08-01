@@ -13,6 +13,7 @@ type AuditRepository interface {
 	CreateKesesuaian(kesesuaian *model.Kesesuaian) error
 	GetAuditByID(id uint) (*model.Audit, error)
 	GetAllAudits() ([]model.Audit, error)
+	UpdateAudit(audit *model.Audit) error
 	DeleteAudit(id uint) error
 	CalculatePersentaseKesesuaianDokumen(auditID uint) (*model.PersentaseKesesuaianDokumen, error)
 	CalculatePersentaseKesesuaianPerKategori(kategori string) (*model.PersentaseKesesuaianPerKategori, error)
@@ -75,8 +76,8 @@ func (r *auditRepository) CreateKesesuaian(kesesuaian *model.Kesesuaian) error {
 		kesesuaian.SkorVerifikasi = 0
 	}
 
-	kesesuaian.KesesuaianIHA = util.CountBusinessDays(kesesuaian.Audit.TanggalBAExit, kesesuaian.Audit.TanggalTerbitIHA)-kesesuaian.Audit.HariLiburIHA < 11 &&
-		util.CountBusinessDays(kesesuaian.Audit.TanggalBAExit, kesesuaian.Audit.TanggalTerbitLHA)-kesesuaian.Audit.HariLiburIHA < 11
+	kesesuaian.KesesuaianIHA = util.CountBusinessDays(kesesuaian.Audit.TanggalBAExit, kesesuaian.Audit.TanggalTerbitIHALHA)-kesesuaian.Audit.HariLiburIHA < 11
+
 	if kesesuaian.KesesuaianIHA {
 		kesesuaian.SkorIHA = 1
 	} else {
@@ -119,6 +120,84 @@ func (r *auditRepository) GetAllAudits() ([]model.Audit, error) {
 		return nil, err
 	}
 	return audits, nil
+}
+
+func (r *auditRepository) UpdateAudit(audit *model.Audit) error {
+	// Check if the audit exists
+	var existingAudit model.Audit
+	if err := r.DB.First(&existingAudit, audit.ID).Error; err != nil {
+		return err
+	}
+
+	// Update audit
+	if err := r.DB.Model(&existingAudit).Updates(audit).Error; err != nil {
+		return err
+	}
+
+	// Update kesesuaian
+	var kesesuaian model.Kesesuaian
+	if err := r.DB.Where("audit_id = ?", audit.ID).First(&kesesuaian).Error; err != nil {
+		return err
+	}
+
+	kesesuaian.JumlahHariSurat = util.CountBusinessDays(audit.TanggalSurat, audit.TanggalMulai) - audit.HariLiburSurat
+	kesesuaian.KesesuaianSurat = kesesuaian.JumlahHariSurat > 9
+	if kesesuaian.KesesuaianSurat {
+		kesesuaian.SkorSurat = 1
+	} else {
+		kesesuaian.SkorSurat = 0
+	}
+
+	kesesuaian.JumlahHariPelaksanaan = int(audit.TanggalSelesai.Sub(audit.TanggalMulai).Hours()/24) + 1
+	kesesuaian.KesesuaianPelaksanaan = kesesuaian.JumlahHariPelaksanaan < 8
+	if kesesuaian.KesesuaianPelaksanaan {
+		kesesuaian.SkorPelaksanaan = 1
+	} else {
+		kesesuaian.SkorPelaksanaan = 0
+	}
+
+	kesesuaian.KesesuaianSDM = audit.JumlahOrang <= 5
+	if kesesuaian.KesesuaianSDM {
+		kesesuaian.SkorSDM = 1
+	} else {
+		kesesuaian.SkorSDM = 0
+	}
+
+	kesesuaian.JumlahHariVerifikasi = util.CountBusinessDays(audit.TanggalTindakLanjut, audit.TanggalVerifikasi) - audit.HariLiburVerifikasi
+	kesesuaian.KesesuaianVerifikasi = kesesuaian.JumlahHariVerifikasi <= 7
+	if kesesuaian.KesesuaianVerifikasi {
+		kesesuaian.SkorVerifikasi = 1
+	} else {
+		kesesuaian.SkorVerifikasi = 0
+	}
+
+	kesesuaian.KesesuaianIHA = util.CountBusinessDays(audit.TanggalBAExit, audit.TanggalTerbitIHALHA)-audit.HariLiburIHA < 11
+	if kesesuaian.KesesuaianIHA {
+		kesesuaian.SkorIHA = 1
+	} else {
+		kesesuaian.SkorIHA = 0
+	}
+
+	kesesuaian.KesesuaianBuktiTL = util.CountBusinessDays(audit.TanggalBAExit, audit.TanggalSelesaiTL)-audit.HariLiburBuktiTL <= 40
+	if kesesuaian.KesesuaianBuktiTL {
+		kesesuaian.SkorBuktiTL = 1
+	} else {
+		kesesuaian.SkorBuktiTL = 0
+	}
+
+	kesesuaian.KesesuaianSelesaiAudit = util.CountBusinessDays(audit.TanggalSelesaiTL, audit.TanggalSuratSelesai)-audit.HariLiburSelesai <= 7
+	if kesesuaian.KesesuaianSelesaiAudit {
+		kesesuaian.SkorSelesaiAudit = 1
+	} else {
+		kesesuaian.SkorSelesaiAudit = 0
+	}
+
+	totalSkor := kesesuaian.SkorSurat + kesesuaian.SkorPelaksanaan + kesesuaian.SkorSDM + kesesuaian.SkorVerifikasi +
+		kesesuaian.SkorIHA + kesesuaian.SkorBuktiTL + kesesuaian.SkorSelesaiAudit
+
+	kesesuaian.PersentaseKesesuaianDokumen = (totalSkor * 100) / 7
+
+	return r.DB.Save(&kesesuaian).Error
 }
 
 func (r *auditRepository) DeleteAudit(id uint) error {

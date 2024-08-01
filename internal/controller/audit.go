@@ -15,6 +15,7 @@ type AuditController interface {
 	CreateAuditWithKesesuaian(ctx *gin.Context)
 	GetAuditByID(ctx *gin.Context)
 	GetAllAudits(ctx *gin.Context)
+	UpdateAudit(ctx *gin.Context)
 	DeleteAudit(ctx *gin.Context)
 	CalculatePersentaseKesesuaianDokumen(ctx *gin.Context)
 	CalculatePersentaseKesesuaianPerKategori(ctx *gin.Context)
@@ -109,6 +110,21 @@ func (c *auditController) GetAllAudits(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, audits)
+}
+
+func (c *auditController) UpdateAudit(ctx *gin.Context) {
+	var audit model.Audit
+	if err := ctx.ShouldBindJSON(&audit); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := c.service.UpdateAudit(&audit); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Audit updated successfully"})
 }
 
 func (c *auditController) DeleteAudit(ctx *gin.Context) {
