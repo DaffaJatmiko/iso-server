@@ -46,7 +46,7 @@ func SetupRoutes(
 	api.POST("/audit/audit-with-kesesuaian", auditController.CreateAuditWithKesesuaian)
 	api.GET("/audit/:id", auditController.GetAuditByID)
 	api.GET("/audits", auditController.GetAllAudits)
-	api.PUT("/audit/:id", auditController.UpdateAudit)
+	api.PUT("/audit", auditController.UpdateAudit)
 	api.DELETE("/audit/:id", auditController.DeleteAudit)
 	api.GET("/audit/persentase-dokumen/:auditID", auditController.CalculatePersentaseKesesuaianDokumen)
 	api.GET("/audit/persentase-kategori/:kategori", auditController.CalculatePersentaseKesesuaianPerKategori)
